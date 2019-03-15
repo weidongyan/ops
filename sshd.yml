@@ -1,0 +1,38 @@
+---
+- name: speed up ssh login process
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: disable dns
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^UseDNS
+        line: 'UseDNS no' 
+        backup: yes
+      notify:
+        - restart sshd service
+
+    - name: disable GSSAPI
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^GSSAPIAuthentication
+        line: 'GSSAPIAuthentication yes' 
+        backup: yes
+      notify:
+        - restart sshd service
+      
+    - name: enable password login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^PasswordAuthentication
+        line: 'PasswordAuthentication yes' 
+        backup: yes
+      notify:
+        - restart sshd service
+  handlers:
+    - name: restart sshd service
+      service:
+        name: sshd
+        state: restarted
+        enabled: yes

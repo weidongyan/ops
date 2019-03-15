@@ -1,0 +1,64 @@
+---
+- name: install and setup dnsmasq
+  hosts: localhost
+  become: yes
+  vars:
+    - upstreamdns: 192.168.1.200
+
+  tasks:
+    - name: install dnsmasq
+      yum:
+        name: 
+          - dnsmasq
+          - bind-utils
+        state: present
+
+    - name: enable dnsmsq.d
+      blockinfile:
+        path: /etc/dnsmasq.conf
+        block: |
+          conf-dir=/etc/dnsmasq.d
+
+    - name: create configuration file
+      blockinfile:
+        path: /etc/dnsmasq.d/custom.conf
+        block: |
+          resolv-file=/etc/dnsmasq.upstream.conf
+          strict-order
+          address=/.apps.fcg.io/192.168.5.84
+          address=/.fcg.cn/192.168.5.84
+          address=/.test.fcg.io/192.168.5.86
+        create: yes
+      notify:
+         - restart_dnsmasq
+
+    - name: create upstream record
+      blockinfile:
+        path: /etc/dnsmasq.upstream.conf
+        block: |
+          nameserver {{ upstreamdns }}
+        create: yes
+
+    - name: start and enable dnsmasq service
+      service:
+        name: dnsmasq
+        state: started
+        enabled: yes
+
+    - name: update hosts record
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          172.25.250.10 suppiler1.fcg.io suppiler1
+          172.25.250.10 registry.fcg.io registry
+          172.25.250.11 master1.fcg.io master1
+
+      notify:
+       - restart_dnsmasq
+
+  handlers:
+    - name: restart_dnsmasq
+      service:
+        name: dnsmasq
+        state: restarted
+

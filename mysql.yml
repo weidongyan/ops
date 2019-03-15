@@ -1,0 +1,35 @@
+---
+- name: MySQL install and config
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Install MySQL software
+      yum:
+        name:
+          - mariadb
+          - mariadb-devel
+          - mariadb-server
+          - MySQL-python
+        state: latest
+
+    - name: Start MySQL
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Add a DB user
+      mysql_user:
+        name: vagrant
+        password: vagrant
+        priv: '*.*:ALL'
+        state: present
+
+    - name: Add a Database for Django
+      mysql_db:
+        name: devops
+        state: present
+
+

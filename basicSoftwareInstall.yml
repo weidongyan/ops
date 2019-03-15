@@ -1,0 +1,28 @@
+---
+- name: Provision softwore installation
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Install softwares 
+      yum:
+        name: 
+          - wget
+          - git
+          - net-tools
+          - bind-utils
+          - yum-utils
+          - bash-completion
+          - vim
+          - lvm2
+          - e2fsprogs
+        state: latest
+    - name: config vim for yaml
+      copy:
+        content: |
+          autocmd FileType yaml setlocal ai ts=2 sw=2 et
+          autocmd FileType python setlocal ai ts=4 sw=4 et
+          autocmd FileType html setlocal ai ts=4 sw=4 et
+        dest: /root/.vimrc
+

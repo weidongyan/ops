@@ -1,0 +1,20 @@
+---
+- name: Django install and config
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Install Python36
+      yum:
+        name:
+          - python36
+          - python36-pip
+          - python36-setuptools
+          - python36-devel
+          - python36-libs
+          - gcc
+        state: latest
+
+    - name: Install django from pip with a requirement file
+      shell: pip3.6 install -r requirement.txt

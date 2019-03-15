@@ -1,0 +1,16 @@
+---
+- name: set default route permanently
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: add route command to rc.local
+      lineinfile:
+        path: /etc/rc.d/rc.local
+        line: 'route add default gw 192.168.5.1'
+        mode: 0755
+    - name: add route command to rc.local
+      lineinfile:
+        path: /etc/rc.d/rc.local
+        line: 'route del default gw 192.168.121.1'
+        mode: 0755

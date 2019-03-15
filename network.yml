@@ -1,0 +1,12 @@
+---
+- name: modify the network configration created by vagrant
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: add default gw and dns to eth1
+      blockinfile:
+        path: /etc/sysconfig/network-scripts/ifcfg-eth1
+        block: |
+          GATEWAY=192.168.5.1
+          DNS1=192.168.5.80
